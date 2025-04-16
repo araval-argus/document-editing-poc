@@ -1,70 +1,123 @@
-# Getting Started with Create React App
+# 📝 OnlyOffice + React PoC Setup
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project demonstrates how to run **OnlyOffice Document Server** locally with Docker and integrate it with a local **React app** for document editing.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📦 Part 1: Setting Up OnlyOffice Document Server with Docker
 
-### `npm start`
+### Step 1: Pull the OnlyOffice Docker Image
+```bash
+docker pull onlyoffice/documentserver
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Step 2: Run the OnlyOffice Container (Without JWT)
+```bash
+docker run -i -t -d \
+  -p 8080:80 \
+  -e JWT_ENABLED=false \
+  --name onlyoffice-documentserver-nojwt \
+  onlyoffice/documentserver
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+> This command:
+> - Runs the container in detached mode (`-d`)
+> - Maps port `8080` on your host to port `80` inside the container
+> - Disables JWT (for local testing)
+> - Names the container `onlyoffice-documentserver-nojwt`
 
-### `npm test`
+### Step 3: Configure CORS
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Edit the following file inside the container:
 
-### `npm run build`
+```
+/etc/onlyoffice/documentserver/local.json
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Update the `cors` section like so:
+```json
+"cors": {
+  "allowed_origins": [
+    "http://localhost:3000",
+    "http://192.1.160.81:3000"
+  ],
+  "allowed_methods": ["GET", "POST", "PUT", "DELETE"],
+  "allowed_headers": ["Authorization", "Content-Type"]
+}
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+> 💡 Restart the container after editing `local.json` to apply changes.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🐳 Docker Container Commands
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Restart container:**
+  ```bash
+  docker restart onlyoffice-documentserver-nojwt
+  ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **View logs:**
+  ```bash
+  docker logs onlyoffice-documentserver-nojwt
+  ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 💻 Part 2: Setting Up the Frontend React App
 
-## Learn More
+### Prerequisite: Install Node.js
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Recommended version:
+```
+v20.15.1
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Use [nvm](https://github.com/nvm-sh/nvm) if needed:
+```bash
+nvm install 20.15.1
+nvm use 20.15.1
+```
 
-### Code Splitting
+### Install Dependencies
+```bash
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Start the App
+```bash
+npm start
+```
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 📁 Project Structure (Example)
 
-### Making a Progressive Web App
+```
+├── public/
+│   ├── index.html
+│   ├── Hive Developers.xlsx
+│   └── Hive_development_priorities.docx
+├── src/
+│   ├── App.js
+│   └── DocumentEditor.js
+├── local.json
+├── .gitignore
+├── package.json
+└── README.md
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+## 🧪 What's Included
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- Local Docker-based setup of OnlyOffice Document Server
+- CORS configuration for local dev
+- React frontend to interface with the editor
+- Node 20+ compatible setup
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 📬 Feedback / Contributions
 
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Feel free to fork this repo and raise a PR or open issues if you run into trouble. Happy coding! 🚀
