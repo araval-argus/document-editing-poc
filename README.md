@@ -36,13 +36,17 @@ Edit the following file inside the container:
 
 Update the `cors` section like so:
 ```json
-"cors": {
-  "allowed_origins": [
-    "http://localhost:3000",
-    "http://192.1.160.81:3000"
-  ],
-  "allowed_methods": ["GET", "POST", "PUT", "DELETE"],
-  "allowed_headers": ["Authorization", "Content-Type"]
+"services": {
+  "CoAuthoring": {
+    "cors": {
+      "allowed_origins": [
+        "http://localhost:3000",
+        "http://192.1.160.81:3000"
+        ],
+        "allowed_methods": ["GET", "POST", "PUT", "DELETE"],
+        "allowed_headers": ["Authorization", "Content-Type"]
+    }
+  }
 }
 ```
 
